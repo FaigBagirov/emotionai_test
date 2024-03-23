@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- ... your existing code ... -->
+
+<!-- Add a button for the user to start the video -->
+<button id="playButton">Play Video</button>
+
+<script>
+// ... your existing script ...
+
+// Add an event listener to the play button
+document.getElementById('playButton').addEventListener('click', function() {
+  CY.loader()
+    .source(CY.createSource.fromVideoUrl("https://cors-anywhere.herokuapp.com/https://github.com/FaigBagirov/emotionai_test/raw/main/mixkit-businessman-talking-to-an-audience-23318-medium.mp4"))
+    // ... rest of your code ...
+    .then(async ({ start, stop }) => {
+      
+      await start();
+      await statisticsUploader.start();
+
+      // Hide the play button after starting the video
+      document.getElementById('playButton').style.display = 'none';
+
+      setTimeout(async () => {
+          await statisticsUploader.stop();
+          await stop();
+      }, statsConfig.stopAfter); //stops after 120 mins 
+
+    });
+});
+</script>
+
+<!-- ... your existing body part ... -->
+
+</body>
+</html>
