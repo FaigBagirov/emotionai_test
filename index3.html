@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
-
 <body>
-    <script src="https://sdk.morphcast.com/mphtools/v1.1/mphtools.js"
-        data-config="cameraPrivacyPopup, compatibilityUI, compatibilityAutoCheck"></script>
-    <script src="https://ai-sdk.morphcast.com/v1.16/ai-sdk.js"></script>
-    <script src="https://sdk.morphcast.com/emotion-statistics/v1.0-beta/script.js"></script>
-    <script>
 
-        const statsConfig = {
+<!-- ... your existing code ... -->
+
+<!-- Add a button for the user to start the video -->
+<button id="playButton">Play Video</button>
+
+<script>
+// ... your existing script ...
+
+// Add an event listener to the play button
+document.getElementById('playButton').addEventListener('click', function() {
+    
+    const statsConfig = {
             sendDatainterval: 5000,
             tickInterval: 1000,
             stopAfter: 7200000,
@@ -49,23 +54,34 @@
         window.addEventListener(CY.modules().DATA_AGGREGATOR.eventName, (evt) => {
             console.log('DATA_AGGREGATOR result', evt.detail);
         });
-        <!--
-        MphTools.CameraPrivacyPopup.setText({
-           "title": "Allow us to use your camera",
-           "description": "This experience is designed to be viewed with your camera on. The next screen will ask your consent to access data from your camera.",
-           "url": "https://YOUR_DOMAIN/<YOUR_PRIVACY_POLICY>"
-        });
-         -->
-    </script>
+        
+        // MphTools.CameraPrivacyPopup.setText({
+        //    "title": "Allow us to use your camera",
+        //    "description": "This experience is designed to be viewed with your camera on. The next screen will ask your consent to access data from your camera.",
+        //    "url": "https://YOUR_DOMAIN/<YOUR_PRIVACY_POLICY>"
+        // });
+         
+//   CY.loader()
+//     .source(CY.createSource.fromVideoUrl("https://cors-anywhere.herokuapp.com/https://github.com/FaigBagirov/emotionai_test/raw/main/mixkit-businessman-talking-to-an-audience-23318-medium.mp4"))
+//     // ... rest of your code ...
+//     .then(async ({ start, stop }) => {
+      
+//       await start();
+//       await statisticsUploader.start();
 
-    <!-- your body part -->
+//       // Hide the play button after starting the video
+//       document.getElementById('playButton').style.display = 'none';
 
-    <h2>HTML Buttons</h2>
-    <p>HTML buttons are defined with the button tag:</p>
+//       setTimeout(async () => {
+//           await statisticsUploader.stop();
+//           await stop();
+//       }, statsConfig.stopAfter); //stops after 120 mins 
 
-    <button>Click me</button>
+//     });
+});
+</script>
 
+<!-- ... your existing body part ... -->
 
 </body>
-
 </html>
