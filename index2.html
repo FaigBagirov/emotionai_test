@@ -2,23 +2,85 @@
 <html>
 
 <head>
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=10.0, minimum-scale=0.1">
 
 </head>
 
 <body>
+    <div id="main">
+        <div style="position: relative">
+            <video id="webcamStream" autoplay playsinline></video>
+            <canvas id="videoCanvas"></canvas>
+        </div>
+        <div style="position: relative">
+            <button id="startButton" style="height:55px; width:70px;">Start</button>
+        </div>
+    </div>
 
-    <video id="webcamStream" autoplay playsinline style="height:300px; width:200px;display: flex;"></video>
-    <canvas id="videoCanvas" width="300" height="200"></canvas>
+    <style>
+        #main {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            column-gap: 1cm;
+        }
+
+        #webcamStream,
+        #videoCanvas {
+            position: static;
+        }
+
+        #webcamStream {
+            z-index: 1;
+            width: 50vw;
+            height: auto;
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            -moz-transform: rotateY(180deg);
+
+            /* maintain the aspect ratio */
+            /*
+            transform: scale(0.5);
+            height:300px; 
+            width:200px;
+            */
+        }
+
+        #videoCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            -moz-transform: rotateY(180deg);
+
+        }
+
+        #startButton {
+            z-index: 3;
+        }
+    </style>
+
+    <script src="https://sdk.morphcast.com/mphtools/v1.1/mphtools.js"
+        data-config="cameraPrivacyPopup, compatibilityUI, compatibilityAutoCheck"></script>
+    <script src="https://ai-sdk.morphcast.com/v1.16/ai-sdk.js"></script>
+    <script src="https://sdk.morphcast.com/emotion-statistics/v1.0-beta/script.js"></script>
+
+
+
     <script>
+        var canvas = document.getElementById('videoCanvas');
+        var context = canvas.getContext('2d');
         // Function to draw rectangles on the canvas
-        function drawRectangles(y,x,width,height) {
+        function drawRectangles(y, x, width, height) {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            faceData.forEach(function (face) {
-                context.beginPath();
-                context.rect(x, y, width, height);
-                context.strokeStyle = 'green';
-                context.stroke();
-            });
+            //faceData.forEach(function (face) {
+            context.beginPath();
+            context.rect(x, y, width, height);
+            context.strokeStyle = 'green';
+            context.stroke();
+            //});
         }
 
         async function startWebcam() {
@@ -27,25 +89,30 @@
                 const videoElement = document.getElementById('webcamStream');
                 videoElement.srcObject = stream;
 
-                //for face rectangles
-                var canvas = document.getElementById('videoCanvas');
-                var context = canvas.getContext('2d');
+
             } catch (error) {
                 console.error('Error accessing webcam:', error);
             }
         }
-
         // Call the function to start the webcam stream
         startWebcam();
+
+        //for face rectangles
+        window.addEventListener('resize', resizeCanvas);
+        function resizeCanvas() {
+            var video = document.getElementById('webcamStream');
+            var canvas = document.getElementById('videoCanvas');
+
+            // Set the canvas dimensions to match the video element
+            console.log("video height: ", video.clientHeight);
+            canvas.width = video.clientWidth;
+            canvas.height = video.clientHeight;
+        }
+        // Call the function to initially set the size
+        resizeCanvas();
     </script>
-    <script src="https://sdk.morphcast.com/mphtools/v1.1/mphtools.js"
-        data-config="cameraPrivacyPopup, compatibilityUI, compatibilityAutoCheck"></script>
-    <script src="https://ai-sdk.morphcast.com/v1.16/ai-sdk.js"></script>
-    <script src="https://sdk.morphcast.com/emotion-statistics/v1.0-beta/script.js"></script>
-    <!-- ... your existing code ... -->
 
     <!-- Add a button for the user to start the video -->
-    <button id="playButton" style="height:55px; width:70px;">Start</button>
     <h1>Emotion ai</h1>
     <div id="apiOutput">Press start button to get the data</div>
 
@@ -88,8 +155,12 @@
     <script>
         // ... your existing script ...
 
-        // Add an event listener to the play button
-        document.getElementById('playButton').addEventListener('click', function () {
+        // Add an event listener to the start button
+        document.getElementById('startButton').addEventListener('click', function () {
+            var video = document.getElementById('webcamStream');
+
+            console.log("video height on start click: ", video.clientHeight);
+            resizeCanvas();
 
             const statsConfig = {
                 sendDatainterval: 5000,
@@ -146,14 +217,26 @@
                 if (evt.detail.face_attention) {
                     attention = evt.detail.face_attention.attention;
                 }
-                if (evt.detail.face_detector.rects[0]) {
-                    faceCoordinates.y = evt.detail.face_detector.rects[0].y.toString().slice(0, 6);
-                    faceCoordinates.x = evt.detail.face_detector.rects[0].x.toString().slice(0, 6);
-                    faceCoordinates.width = evt.detail.face_detector.rects[0].width.toString().slice(0, 6);
-                    faceCoordinates.height = evt.detail.face_detector.rects[0].height.toString().slice(0, 6);
-                    faceCoordinates.confidence = evt.detail.face_detector.rects[0].confidence.toString().slice(0, 6);
 
-                    drawRectangles(y,x,width,height);
+                
+                if (evt.detail.face_detector.rects[0]) {
+
+                    // Calculate the top left corner of the rectangle
+
+                    faceCoordinates.width = evt.detail.face_detector.rects[0].width;
+                    faceCoordinates.height = evt.detail.face_detector.rects[0].height;
+                    faceCoordinates.y = evt.detail.face_detector.rects[0].y;
+                    faceCoordinates.x = evt.detail.face_detector.rects[0].x;
+
+                    var centerY = faceCoordinates.y + faceCoordinates.height / 2;
+                    var centerX = faceCoordinates.x + faceCoordinates.width / 2;
+
+                    var rectY = centerY - faceCoordinates.height / 2;
+                    var rectX = centerX - faceCoordinates.width / 2;
+
+                    faceCoordinates.confidence = evt.detail.face_detector.rects[0].confidence.toString().slice(0, 10);
+
+                    drawRectangles(rectY, rectX, faceCoordinates.width, faceCoordinates.height);
                 }
 
                 //all features chosen by me in the configurator ui
@@ -203,7 +286,7 @@
             //       await statisticsUploader.start();
 
             //       // Hide the play button after starting the video
-            //       document.getElementById('playButton').style.display = 'none';
+            //       document.getElementById('startButton').style.display = 'none';
 
             //       setTimeout(async () => {
             //           await statisticsUploader.stop();
