@@ -218,15 +218,13 @@
                     attention = evt.detail.face_attention.attention;
                 }
 
-                
-                if (evt.detail.face_detector.rects[0]) {
-
+                evt.detail.face_detector.rects.forEach(rect => {
                     // Calculate the top left corner of the rectangle
 
-                    faceCoordinates.width = evt.detail.face_detector.rects[0].width;
-                    faceCoordinates.height = evt.detail.face_detector.rects[0].height;
-                    faceCoordinates.y = evt.detail.face_detector.rects[0].y;
-                    faceCoordinates.x = evt.detail.face_detector.rects[0].x;
+                    faceCoordinates.width = rect.width;
+                    faceCoordinates.height = rect.height;
+                    faceCoordinates.y = rect.y;
+                    faceCoordinates.x = rect.x;
 
                     var centerY = faceCoordinates.y + faceCoordinates.height / 2;
                     var centerX = faceCoordinates.x + faceCoordinates.width / 2;
@@ -234,10 +232,11 @@
                     var rectY = centerY - faceCoordinates.height / 2;
                     var rectX = centerX - faceCoordinates.width / 2;
 
-                    faceCoordinates.confidence = evt.detail.face_detector.rects[0].confidence.toString().slice(0, 10);
+                    faceCoordinates.confidence = rect.confidence.toString().slice(0, 10);
 
                     drawRectangles(rectY, rectX, faceCoordinates.width, faceCoordinates.height);
-                }
+                });
+
 
                 //all features chosen by me in the configurator ui
                 // FACE_AROUSAL_VALENCE
