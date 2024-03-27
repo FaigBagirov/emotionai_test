@@ -210,7 +210,7 @@
                 });
 
             window.addEventListener(CY.modules().EVENT_BARRIER.eventName, (evt) => {
-                //console.log('EVENT_BARRIER result', evt.detail);
+                console.log('EVENT_BARRIER result', evt.detail);
                 let dominantEmotion = "--";
                 let positivity = "--";
                 let attention = "--";
@@ -265,7 +265,7 @@
             });
 
             window.addEventListener(CY.modules().DATA_AGGREGATOR.eventName, (evt) => {
-                console.log('DATA_AGGREGATOR result', evt.detail);
+                //console.log('DATA_AGGREGATOR result', evt.detail);
             });
 
             MphTools.CameraPrivacyPopup.setText({
