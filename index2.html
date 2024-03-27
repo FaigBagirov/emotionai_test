@@ -73,14 +73,29 @@
         var canvas = document.getElementById('videoCanvas');
         var context = canvas.getContext('2d');
         // Function to draw rectangles on the canvas
-        function drawRectangles(y, x, width, height) {
+        function drawRectangles(faces) {
+
             context.clearRect(0, 0, canvas.width, canvas.height);
-            //faceData.forEach(function (face) {
-            context.beginPath();
-            context.rect(x, y, width, height);
-            context.strokeStyle = 'green';
-            context.stroke();
-            //});
+            faces.forEach(function (face) {
+                context.beginPath();
+
+                // Calculate the top left corner of the rectangle
+
+                face.width = rect.width;
+                face.height = rect.height;
+                face.y = rect.y;
+                face.x = rect.x;
+
+                var rectY = faceCoordinates.y - face.height / 2;
+                var rectX = faceCoordinates.x - face.width / 2;
+
+
+                faceCoordinates.confidence = rect.confidence.toString().slice(0, 10);
+
+                context.rect(rectX, rectY, face.width, face.height);
+                context.strokeStyle = 'green';
+                context.stroke();
+            });
         }
 
         async function startWebcam() {
@@ -218,24 +233,9 @@
                     attention = evt.detail.face_attention.attention;
                 }
 
-                evt.detail.face_detector.rects.forEach(rect => {
-                    // Calculate the top left corner of the rectangle
-
-                    faceCoordinates.width = rect.width;
-                    faceCoordinates.height = rect.height;
-                    faceCoordinates.y = rect.y;
-                    faceCoordinates.x = rect.x;
-
-                    var centerY = faceCoordinates.y + faceCoordinates.height / 2;
-                    var centerX = faceCoordinates.x + faceCoordinates.width / 2;
-
-                    var rectY = centerY - faceCoordinates.height / 2;
-                    var rectX = centerX - faceCoordinates.width / 2;
-
-                    faceCoordinates.confidence = rect.confidence.toString().slice(0, 10);
-
-                    drawRectangles(rectY, rectX, faceCoordinates.width, faceCoordinates.height);
-                });
+                if (evt.detail.face_detector) {
+                    drawRectangles(evt.detail.face_detector.rects);
+                }
 
 
                 //all features chosen by me in the configurator ui
