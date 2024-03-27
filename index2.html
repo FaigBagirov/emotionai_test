@@ -99,10 +99,11 @@
 
         async function startWebcam() {
             try {
+                //{ video: true }
                 const constraints = {
                     video: { facingMode: { exact: "environment" } } //"user" - front, "environment" - back
                 };
-                const stream = await navigator.mediaDevices.getUserMedia({ constraints });
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 const videoElement = document.getElementById('webcamStream');
                 videoElement.srcObject = stream;
                 // async function switchCamera(facingMode) {
