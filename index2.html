@@ -131,37 +131,37 @@
     <div id="apiOutput">Press start button to get the data</div>
 
     <script>
-        // Function to call the Orphcast API and display the result
-        function fetchMorphcastAPI() {
-            // Define the API endpoint
-            const apiEndpoint = 'YOUR_API_ENDPOINT';
+        // Function to call the Morphcast API and display the result
+        // function fetchMorphcastAPI() {
+        //     // Define the API endpoint
+        //     const apiEndpoint = 'YOUR_API_ENDPOINT';
 
-            // Make the API call 
-            fetch(apiEndpoint, {
-                method: 'GET', // or 'POST' if required
-                headers: {
-                    // Add any required headers here
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // Assuming the API returns a JSON object with the parameters
-                    const output = `
-          <p>Emotion: ${data.emotion.face_detector.totalFaces.toString()}</p>
-          <p>Attention: ${data.attention.face_emotion.dominantEmotion}</p>
-          <p>Parameter 3: ${data.param3}</p>
-          <p>Parameter 4: ${data.param4}</p> 
-          <p>Parameter 5: ${data.param5}</p>
-        `;
-                    document.getElementById('apiOutput').innerHTML = output;
-                    //console.log("--------------", data.emotion.face_detector.totalFaces);
-                    //console.log("--------------", data.attention.face_emotion.dominantEmotion);
-                })
-                .catch(error => {
-                    console.error('Error fetching the Orphcast API:', error);
-                    document.getElementById('apiOutput').textContent = 'Error loading output.';
-                });
-        }
+        //     // Make the API call 
+        //     fetch(apiEndpoint, {
+        //         method: 'GET', // or 'POST' if required
+        //         headers: {
+        //             // Add any required headers here
+        //         }
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             // Assuming the API returns a JSON object with the parameters
+        //             const output = `
+        //   <p>Emotion: ${data.emotion.face_detector.totalFaces.toString()}</p>
+        //   <p>Attention: ${data.attention.face_emotion.dominantEmotion}</p>
+        //   <p>Parameter 3: ${data.param3}</p>
+        //   <p>Parameter 4: ${data.param4}</p> 
+        //   <p>Parameter 5: ${data.param5}</p>
+        // `;
+        //             document.getElementById('apiOutput').innerHTML = output;
+        //             //console.log("--------------", data.emotion.face_detector.totalFaces);
+        //             //console.log("--------------", data.attention.face_emotion.dominantEmotion);
+        //         })
+        //         .catch(error => {
+        //             console.error('Error fetching the Orphcast API:', error);
+        //             document.getElementById('apiOutput').textContent = 'Error loading output.';
+        //         });
+        // }
 
         // Call the function on page load
         //window.onload = fetchMorphcastAPI;
