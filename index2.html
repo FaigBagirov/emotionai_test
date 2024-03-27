@@ -81,16 +81,15 @@
 
                 // Calculate the top left corner of the rectangle
 
-                face.width = rect.width;
-                face.height = rect.height;
-                face.y = rect.y;
-                face.x = rect.x;
+                // face.width = rect.width;
+                // face.height = rect.height;
+                // face.y = rect.y;
+                // face.x = rect.x;
 
-                var rectY = faceCoordinates.y - face.height / 2;
-                var rectX = faceCoordinates.x - face.width / 2;
+                var rectY = face.y - face.height / 2;
+                var rectX = face.x - face.width / 2;
 
-
-                faceCoordinates.confidence = rect.confidence.toString().slice(0, 10);
+                face.confidence = rect.confidence.toString().slice(0, 10);
 
                 context.rect(rectX, rectY, face.width, face.height);
                 context.strokeStyle = 'green';
