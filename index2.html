@@ -99,10 +99,20 @@
 
         async function startWebcam() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const constraints = {
+                    video: { facingMode: { exact: "environment" } } //"user" - front, "environment" - back
+                };
+                const stream = await navigator.mediaDevices.getUserMedia({ constraints });
                 const videoElement = document.getElementById('webcamStream');
                 videoElement.srcObject = stream;
-
+                // async function switchCamera(facingMode) {
+                //     const constraints = {
+                //         video: { facingMode: { exact: "environment" } }
+                //     };
+                //     const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                //     const videoElement = document.getElementById('webcamStream');
+                //     videoElement.srcObject = stream;
+                // }
 
             } catch (error) {
                 console.error('Error accessing webcam:', error);
@@ -136,7 +146,7 @@
         //     // Define the API endpoint
         //     const apiEndpoint = 'YOUR_API_ENDPOINT';
 
-        //     // Make the API call 
+        //     // Make the API call
         //     fetch(apiEndpoint, {
         //         method: 'GET', // or 'POST' if required
         //         headers: {
@@ -150,7 +160,7 @@
         //   <p>Emotion: ${data.emotion.face_detector.totalFaces.toString()}</p>
         //   <p>Attention: ${data.attention.face_emotion.dominantEmotion}</p>
         //   <p>Parameter 3: ${data.param3}</p>
-        //   <p>Parameter 4: ${data.param4}</p> 
+        //   <p>Parameter 4: ${data.param4}</p>
         //   <p>Parameter 5: ${data.param5}</p>
         // `;
         //             document.getElementById('apiOutput').innerHTML = output;
