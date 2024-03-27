@@ -252,21 +252,20 @@
                 <p>Emotion: ${dominantEmotion}</p>
                 <p>Face positivity: ${positivity}</p>
                 <p>Face attention: ${attention}</p>
+                `
+                    // <p>Face coordinates y: ${faceCoordinates.y}</p>
+                    // <p>Face coordinates x: ${faceCoordinates.x}</p>
+                    // <p>Face coordinates w: ${faceCoordinates.width}</p>
+                    // <p>Face coordinates h: ${faceCoordinates.height}</p>
+                    // <p>Face coordinates confidence: ${faceCoordinates.confidence}</p>
+                    ;
 
-                <p>Face coordinates y: ${faceCoordinates.y}</p>
-                <p>Face coordinates x: ${faceCoordinates.x}</p>
-                <p>Face coordinates w: ${faceCoordinates.width}</p>
-                <p>Face coordinates h: ${faceCoordinates.height}</p>
-                <p>Face coordinates confidence: ${faceCoordinates.confidence}</p>
-
-
-        `;
                 document.getElementById('apiOutput').innerHTML = output;
 
             });
 
             window.addEventListener(CY.modules().DATA_AGGREGATOR.eventName, (evt) => {
-                //console.log('DATA_AGGREGATOR result', evt.detail);
+                console.log('DATA_AGGREGATOR result', evt.detail);
             });
 
             MphTools.CameraPrivacyPopup.setText({
