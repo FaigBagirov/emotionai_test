@@ -40,7 +40,10 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index2.html"); 
 
 }); 
-   
+
+
+
+  
 // Post request for geetting input from the form 
 app.post("/mssg", function (req, res) { 
   
@@ -49,8 +52,22 @@ app.post("/mssg", function (req, res) {
 
   // Redirecting to the root 
   res.redirect("/"); 
-}); 
+});
+ 
+//  // Get request for root of the app 
+ app.get("/*", function (req, res) { 
   
+  console.log("sample_video_1.mp4 requested");
+  // Sending index.html to the browser 
+  res.sendFile(__dirname + req.url); 
+
+}); 
+
+
+// app.all(function (){
+//   console.log("all was requested");
+
+// })
 // app.all('*', (req, res) => {
 //   res.redirect(300, 'https://' + req.headers.host + req.url);
 // });

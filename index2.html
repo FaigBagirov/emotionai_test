@@ -4,17 +4,24 @@
 <head>
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=10.0, minimum-scale=0.1">
-
 </head>
 
 <body>
     <div id="main">
         <div style="position: relative">
             <video id="webcamStream" autoplay playsinline></video>
+            <video id="videoFile" playsinline>
+                <!-- <source src="sample_video_1.mp4" type="video/mp4"> -->
+                <source src="man_with_glasses.mp4" type="video/mp4">
+                <!-- <source src="few_people.mp4" type="video/mp4"> -->
+                <!-- <source src="movie.ogg" type="video/ogg"> -->
+            </video>
             <canvas id="videoCanvas"></canvas>
         </div>
+
         <div style="position: relative">
-            <button id="startButton" style="height:55px; width:70px;">Start</button>
+            <button id="startCamButton" style="height:55px; width:70px;">Start Cam</button>
+            <button id="startVidFileButton" style="height:55px; width:70px;">Start File</button>
         </div>
     </div>
 
@@ -26,17 +33,19 @@
         }
 
         #webcamStream,
-        #videoCanvas {
+        #videoCanvas,
+        #videoFile {
             position: static;
         }
 
         #webcamStream {
+            display: none;
             z-index: 1;
             width: 50vw;
             height: auto;
-            transform: rotateY(180deg);
+            /* transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
-            -moz-transform: rotateY(180deg);
+            -moz-transform: rotateY(180deg); */
 
             /* maintain the aspect ratio */
             /*
@@ -46,18 +55,25 @@
             */
         }
 
+        #videoFile {
+            display: none;
+            z-index: 1;
+            width: 50vw;
+            height: auto;
+        }
+
         #videoCanvas {
             position: absolute;
             top: 0;
             left: 0;
             z-index: 2;
-            transform: rotateY(180deg);
+            /* transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
-            -moz-transform: rotateY(180deg);
+            -moz-transform: rotateY(180deg); */
 
         }
 
-        #startButton {
+        #startCamButton {
             z-index: 3;
         }
     </style>
@@ -67,11 +83,29 @@
     <script src="https://ai-sdk.morphcast.com/v1.16/ai-sdk.js"></script>
     <script src="https://sdk.morphcast.com/emotion-statistics/v1.0-beta/script.js"></script>
 
-
-
     <script>
+        
+        function resizeCanvas(videoElement) {
+            //var video = document.getElementById('webcamStream');
+            //if (video.clientHeight != 0) {
+            //    video = document.getElementById('videoCanvas');
+            //}
+
+            // Set the canvas dimensions to match the video element
+            console.log("videoElement height: ", videoElement.clientHeight);
+            canvas.width = videoElement.clientWidth;
+            canvas.height = videoElement.clientHeight;
+
+            console.log("canvas heigh is set to: ", canvas.height);
+        }
+        // Call the function to initially set the size
+        //resizeCanvas();
+
         var canvas = document.getElementById('videoCanvas');
-        var context = canvas.getContext('2d');
+        var context = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = 0;
+        canvas.height = 0;
+
         // Function to draw rectangles on the canvas
         function drawRectangles(faces) {
 
@@ -106,7 +140,7 @@
                 const constraints = {
                     audio: false,
                     video: {
-                        facingMode: 'environment' // environment - back cam, user - front cam
+                        facingMode: 'user' // environment - back cam, user - front cam
                     }
                 };
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -127,21 +161,27 @@
             }
         }
         // Call the function to start the webcam stream
-        startWebcam();
+        // startWebcam();
 
         //for face rectangles
-        window.addEventListener('resize', resizeCanvas);
-        function resizeCanvas() {
-            var video = document.getElementById('webcamStream');
-            var canvas = document.getElementById('videoCanvas');
+        // window.addEventListener('resize', resizeCanvas);
+        // function resizeCanvas() {
+        //     var video = document.getElementById('webcamStream');
+        //     if (video.clientHeight != 0) {
+        //         video = document.getElementById('videoCanvas');
+        //     }
 
-            // Set the canvas dimensions to match the video element
-            console.log("video height: ", video.clientHeight);
-            canvas.width = video.clientWidth;
-            canvas.height = video.clientHeight;
-        }
-        // Call the function to initially set the size
-        resizeCanvas();
+        //     // Set the canvas dimensions to match the video element
+        //     console.log("video height: ", video.clientHeight);
+        //     canvas.width = video.clientWidth;
+        //     canvas.height = video.clientHeight;
+
+        //     console.log("canvas heigh is set to: ", canvas.height);
+        // }
+        // // Call the function to initially set the size
+        // setTimeout(() => {
+        //     resizeCanvas();
+        // }, 10000);
     </script>
 
     <!-- Add a button for the user to start the video -->
@@ -188,11 +228,12 @@
         // ... your existing script ...
 
         // Add an event listener to the start button
-        document.getElementById('startButton').addEventListener('click', function () {
+        document.getElementById('startCamButton').addEventListener('click', function () {
+            startWebcam();
             var video = document.getElementById('webcamStream');
-
+            video.style.display = "block";
             console.log("video height on start click: ", video.clientHeight);
-            resizeCanvas();
+            resizeCanvas(video);
 
             const statsConfig = {
                 sendDatainterval: 5000,
@@ -201,17 +242,20 @@
                 licenseKey: "sk300739885aa80c0ecc47487a732aa36e3e4664293eba"
             };
             const statisticsUploader = new MorphCastStatistics.StatisticsUploader(statsConfig);
-
+            const faceDetectConfig = { maxInputFrameSize: 640, smoothness: 0.5, multiFace: true, };
+            //const fromHtmlElement = CY.createSource.fromVideoElement(document.getElementById("webcamStream"));
+            //const fromVideoUrl = CY.createSource.fromVideoUrl("https://github.com/FaigBagirov/emotionai_test/raw/main/mixkit-businessman-talking-to-an-audience-23318-medium.mp4");
             CY.loader()
                 .licenseKey("sk300739885aa80c0ecc47487a732aa36e3e4664293eba")
-                //.source(CY.createSource.fromVideoUrl("https://github.com/FaigBagirov/emotionai_test/raw/main/mixkit-businessman-talking-to-an-audience-23318-medium.mp4"))
+                //.source(fromHtmlElement)
+                //.source(fromVideoUrl)
                 .addModule(CY.modules().FACE_AROUSAL_VALENCE.name, { smoothness: 0.70 })
                 .addModule(CY.modules().FACE_EMOTION.name, { smoothness: 0.40 })
                 .addModule(CY.modules().FACE_ATTENTION.name, { smoothness: 0.83 })
                 .addModule(CY.modules().ALARM_LOW_ATTENTION.name, { timeWindowMs: 5000, initialToleranceMs: 7000, threshold: 0.33 })
                 .addModule(CY.modules().FACE_WISH.name, { smoothness: 0.8 })
                 .addModule(CY.modules().FACE_POSE.name, { smoothness: 0.65 })
-                .addModule(CY.modules().FACE_DETECTOR.name, { maxInputFrameSize: 320, smoothness: 0.83 })
+                .addModule(CY.modules().FACE_DETECTOR.name, faceDetectConfig)
                 .addModule(CY.modules().DATA_AGGREGATOR.name, { initialWaitMs: 2000, periodMs: 1000 })
                 .addModule(CY.modules().FACE_POSITIVITY.name, { smoothness: 0.40, gain: 2, angle: 17 })
                 .load()
@@ -292,6 +336,33 @@
                 "url": "https://YOUR_DOMAIN/<YOUR_PRIVACY_POLICY>"
             });
 
+            // const constraints = {
+            //         audio: false,
+            //         video: {
+            //             facingMode: 'environment' // environment - back cam, user - front cam
+            //         }
+            //     };
+            // navigator.mediaDevices.getUserMedia(constraints)
+            //     .then(stream => {
+            //         // Pass the stream to the Morphcast SDK
+            //         MphTools.CameraPrivacyPopup.setText({
+            //             "title": "Allow us to use your camera",
+            //             "description": "This experience is designed to be viewed with your camera on. The next screen will ask your consent to access data from your camera.",
+            //             "url": "https://YOUR_DOMAIN/<YOUR_PRIVACY_POLICY>"
+            //         });
+
+            //         // Initialize the Morphcast SDK with the stream
+            //         // This is a placeholder, replace with actual Morphcast SDK initialization code
+            //         initializeMorphcastSDKWithStream(stream);
+            //     })
+            //     .catch(error => {
+            //         console.error('Error accessing the camera:', error);
+            //     });
+
+
+
+
+
             //   CY.loader()
             //     .source(CY.createSource.fromVideoUrl("https://cors-anywhere.herokuapp.com/https://github.com/FaigBagirov/emotionai_test/raw/main/mixkit-businessman-talking-to-an-audience-23318-medium.mp4"))
             //     // ... rest of your code ...
@@ -301,7 +372,7 @@
             //       await statisticsUploader.start();
 
             //       // Hide the play button after starting the video
-            //       document.getElementById('startButton').style.display = 'none';
+            //       document.getElementById('startCamButton').style.display = 'none';
 
             //       setTimeout(async () => {
             //           await statisticsUploader.stop();
@@ -310,6 +381,113 @@
 
             //     });
         });
+
+
+        document.getElementById('startVidFileButton').addEventListener('click', function () {
+            var video = document.getElementById('videoFile');
+            video.style.display = "block";
+            video.play();
+            console.log("video height on start click: ", video.clientHeight);
+            resizeCanvas(video);
+
+            const statsConfig = {
+                sendDatainterval: 5000,
+                tickInterval: 1000,
+                stopAfter: 7200000,
+                licenseKey: "sk300739885aa80c0ecc47487a732aa36e3e4664293eba"
+            };
+            const statisticsUploader = new MorphCastStatistics.StatisticsUploader(statsConfig);
+            const faceDetectConfig = { maxInputFrameSize: 640, smoothness: 0.83, multiFace: true, };
+            const fromHtmlElement = CY.createSource.fromVideoElement(document.getElementById("videoFile"));
+            //const fromVideoUrl = CY.createSource.fromVideoUrl("https://github.com/FaigBagirov/emotionai_test/raw/main/mixkit-businessman-talking-to-an-audience-23318-medium.mp4");
+            CY.loader()
+                .licenseKey("sk300739885aa80c0ecc47487a732aa36e3e4664293eba")
+                .source(fromHtmlElement)
+                //.source(fromVideoUrl)
+                .addModule(CY.modules().FACE_AROUSAL_VALENCE.name, { smoothness: 0.70 })
+                .addModule(CY.modules().FACE_EMOTION.name, { smoothness: 0.40 })
+                .addModule(CY.modules().FACE_ATTENTION.name, { smoothness: 0.83 })
+                .addModule(CY.modules().ALARM_LOW_ATTENTION.name, { timeWindowMs: 5000, initialToleranceMs: 7000, threshold: 0.33 })
+                .addModule(CY.modules().FACE_WISH.name, { smoothness: 0.8 })
+                .addModule(CY.modules().FACE_POSE.name, { smoothness: 0.65 })
+                .addModule(CY.modules().FACE_DETECTOR.name, faceDetectConfig)
+                .addModule(CY.modules().DATA_AGGREGATOR.name, { initialWaitMs: 2000, periodMs: 1000 })
+                .addModule(CY.modules().FACE_POSITIVITY.name, { smoothness: 0.40, gain: 2, angle: 17 })
+                .load()
+                .then(async ({ start, stop }) => {
+
+                    await start();
+                    await statisticsUploader.start();
+
+                    setTimeout(async () => {
+                        await statisticsUploader.stop();
+                        await stop();
+                    }, statsConfig.stopAfter); //stops after 120 mins 
+
+                });
+
+            window.addEventListener(CY.modules().EVENT_BARRIER.eventName, (evt) => {
+                console.log('EVENT_BARRIER result', evt.detail);
+                let dominantEmotion = "--";
+                let positivity = "--";
+                let attention = "--";
+                let faceCoordinates = {
+                    y: "--",
+                    x: "--",
+                    width: "--",
+                    height: "--",
+                    confidence: "--",
+                };
+
+                if (evt.detail.face_emotion) {
+                    dominantEmotion = evt.detail.face_emotion.dominantEmotion;
+                }
+                if (evt.detail.face_positivity) {
+                    positivity = evt.detail.face_positivity.positivity;
+                }
+                if (evt.detail.face_attention) {
+                    attention = evt.detail.face_attention.attention;
+                }
+
+                if (evt.detail.face_detector) {
+                    drawRectangles(evt.detail.face_detector.rects);
+                }
+
+
+                //all features chosen by me in the configurator ui
+                // FACE_AROUSAL_VALENCE
+                // FACE_EMOTION
+                // FACE_ATTENTION
+                // ALARM_LOW_ATTENTION
+                // FACE_WISH
+                // FACE_POSE
+                // FACE_DETECTOR
+                // DATA_AGGREGATOR
+                // FACE_POSITIVITY
+                const output = `
+                <p>Faces count: ${evt.detail.face_detector.totalFaces}</p>
+                <p>Emotion: ${dominantEmotion}</p>
+                <p>Face positivity: ${positivity}</p>
+                <p>Face attention: ${attention}</p>
+                `;
+
+                document.getElementById('apiOutput').innerHTML = output;
+
+            });
+
+            window.addEventListener(CY.modules().DATA_AGGREGATOR.eventName, (evt) => {
+                //console.log('DATA_AGGREGATOR result', evt.detail);
+            });
+
+            MphTools.CameraPrivacyPopup.setText({
+                "title": "Allow us to use your camera",
+                "description": "This experience is designed to be viewed with your camera on. The next screen will ask your consent to access data from your camera.",
+                "url": "https://YOUR_DOMAIN/<YOUR_PRIVACY_POLICY>"
+            });
+
+        });
+
+
     </script>
 
     <!-- <p id="first" style="display:block">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
