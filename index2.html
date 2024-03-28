@@ -100,12 +100,19 @@
         async function startWebcam() {
             try {
                 //{ video: true }
+                navigator.mediaDevices.enumerateDevices().then((result) => {
+                    console.log("devices: ", result);
+                });
                 const constraints = {
-                    video: { facingMode: { exact: "environment" } } //"user" - front, "environment" - back
+                    audio: false,
+                    video: {
+                        facingMode: 'environment' // environment - back cam, user - front cam
+                    }
                 };
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 const videoElement = document.getElementById('webcamStream');
                 videoElement.srcObject = stream;
+                //
                 // async function switchCamera(facingMode) {
                 //     const constraints = {
                 //         video: { facingMode: { exact: "environment" } }
